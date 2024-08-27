@@ -1,0 +1,142 @@
+''Option Explicit
+'Sub Console_data()
+'
+'Dim lo As ListObject
+'Dim iCol As Long
+'Dim lrow As String
+'Dim lrowcalc As String
+'Dim currentDate As Date
+'Dim nextYearDate As Date
+'Dim myRange As Range
+'Application.ScreenUpdating = False
+'Application.DisplayAlerts = False
+'
+'Sheets("BankRegister Report (Full)").AutoFilterMode = False
+'lrow = Sheets("BankRegister Report (Full)").Range("A" & Rows.Count).End(xlUp).Row
+'lrc = Sheets("Calc").Range("E" & Rows.Count).End(xlUp).Row
+'
+'
+'
+'lrw = Sheets("Calc").Range("D" & Rows.Count).End(xlUp).Row
+''lColumn = Sheets("BankRegister Report (Full)").Cells(3, Columns.Count).End(xlToLeft).Column
+'
+''Sheets("Historical Data").Range("J2").Formula = "=Calc!E2"
+'
+'Sheets("Historical Data").Range("L2").Value = Sheets("Calc").Range("E" & lrc).Value
+'
+'lrowcalc = Sheets("Historical Data").Range("J" & Rows.Count).End(xlUp).Row
+'
+'     For j = 2 To lrow
+'   For i = 2 To lrw
+'
+'            Sheets("BankRegister Report (Full)").AutoFilterMode = False
+'
+'      cname = Sheets("Calc").Range("D" & i).Value
+'
+'    Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=2, Criteria1:=cname
+'     bname = Trim(Sheets("Historical Data").Range("j" & j).Value)
+'
+'    Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=3, Criteria1:=bname
+'
+'    fltrLrow = Sheets("BankRegister Report (Full)").Range("D" & Rows.Count).End(xlUp).Row
+'
+'    Set rnData = Sheets("BankRegister Report (Full)").Range("C4:C" & fltrLrow)
+'    prtyCount = rnData.SpecialCells(xlCellTypeVisible).Rows.Count
+'
+'    lrwc1 = Sheets("Historical Data").Range("D" & Rows.Count).End(xlUp).Row + 1
+'    lrwc2 = Sheets("Historical Data").Range("E" & Rows.Count).End(xlUp).Row + 1
+'
+'    If prtyCount > 3 Then
+'    Sheets("BankRegister Report (Full)").Activate
+'
+'    Sheets("BankRegister Report (Full)").Range("D" & prtyCount).Copy
+'
+'    'Selection.Copy
+'    Sheets("Historical Data").Range("D" & lrwc1).PasteSpecial xlPasteValues
+'    Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=2
+''    currentDate = bname ' Get the current date
+''
+''    nextYearDate = DateAdd("yyyy", 1, currentDate) - 1 ' Add 1 year to the current date
+''    bname = WorksheetFunction.Trim(nextYearDate)
+''    Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=3, Criteria1:=bname
+''
+''    Sheets("BankRegister Report (Full)").Range("E" & prtyCount).Select
+''
+''    Selection.Copy
+''    Sheets("Historical Data").Range("E" & lrwc1).PasteSpecial xlPasteValues
+'
+'Else
+''   Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=2
+'
+''Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=2, Criteria1:=cname
+'
+'Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=3
+''bname = Trim(DateAdd("d", 1, bname))
+''Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=3, Criteria1:=bname
+'firstRow = Sheets("BankRegister Report (Full)").Range("D4:D" & lrow).SpecialCells(xlCellTypeVisible).Rows(1).Row
+'
+'Sheets("BankRegister Report (Full)").Range("D" & firstRow).Copy
+'
+''Sheets("BankRegister Report (Full)").Activate
+''Set rnData = Sheets("BankRegister Report (Full)").Range("C3:C" & lrow)
+''
+''    prtyCount = rnData.SpecialCells(xlCellTypeVisible).Rows.Count
+''
+''    Sheets("BankRegister Report (Full)").Range("D" & prtyCount).Select
+''
+''    Selection.Copy
+'    Sheets("Historical Data").Range("D" & lrwc1).PasteSpecial xlPasteValues
+'    Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=2
+'
+'   End If
+'   Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=2
+'   Sheets("BankRegister Report (Full)").Range("A3:DD" & lrow).AutoFilter Field:=3
+'Next i
+'Next j
+'
+'Application.ScreenUpdating = True
+'Application.DisplayAlerts = True
+'
+'End Sub
+
+
+Sub OpBalAndClsBal()
+Dim rngFiltered As Range
+
+
+bnkList = Sheets("Calc").Range("D" & Rows.Count).End(xlUp).Row
+OpDts = Sheets("Historical Data").Range("J" & Rows.Count).End(xlUp).Row
+
+For j = 2 To OpDts
+    For i = 2 To bnkList
+    pstRow = Sheets("Historical Data").Range("D" & Rows.Count).End(xlUp).Row
+    Sheets("BankRegister Report (Full)").AutoFilterMode = False
+    lstRow = Sheets("BankRegister Report (Full)").Range("B" & Rows.Count).End(xlUp).Row
+    bnkVal = Sheets("Calc").Range("D" & i).Value
+    opDte = Trim(Sheets("Historical Data").Range("J" & j).Value)
+    Sheets("BankRegister Report (Full)").Range("3:3").AutoFilter Field:=2, Criteria1:=bnkVal
+    Sheets("BankRegister Report (Full)").Range("3:3").AutoFilter Field:=3, Criteria1:=opDte
+    
+    Set rngFiltered = Nothing
+    On Error Resume Next
+    Set rngFiltered = Sheets("BankRegister Report (Full)").Range("B4:E" & lstRow).SpecialCells(xlCellTypeVisible)
+    On Error GoTo 0
+    
+    If Not rngFiltered Is Nothing Then
+        Debug.Print "OpeningBal : " & rngFiltered.Cells(1, 3).Value
+        rngFiltered.Cells(1, 3).Copy
+        Sheets("Historical Data").Range("D" & pstRow + 1).PasteSpecial xlPasteValues
+    Else
+        Sheets("BankRegister Report (Full)").Range("3:3").AutoFilter Field:=3
+        Sheets("BankRegister Report (Full)").Range("3:3").AutoFilter Field:=3, Criteria1:="*" & VBA.Format(opDte, "mm-yyyy") & "*"
+        Sheets("BankRegister Report (Full)").Range("D4:D" & lstRow).SpecialCells(xlCellTypeVisible).Rows(1).Copy
+        Sheets("Historical Data").Range("D" & pstRow + 1).PasteSpecial xlPasteValues
+        Application.CutCopyMode = False
+    End If
+    
+    Next i
+Next j
+'Sheets ("Historical Data")
+Sheets("BankRegister Report (Full)").AutoFilterMode = False
+End Sub
+
